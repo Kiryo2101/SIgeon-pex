@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PopCat Clone</title>
+<style>
+  :root {
+    --bg: #1a1a2e;
+    --accent: #ffd23f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    color: white;
+    user-select: none;
+    overflow: hidden;
+  }
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+    letter-spacing: 1px;
+  }
+  #counter {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+  }
+  #cat-wrap {
+    position: relative;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  #cat {
+    width: 260px;
+    height: 260px;
+    transition: transform 0.06s ease;
+  }
+  #cat-wrap:active #cat,
+  #cat-wrap.clicked #cat {
+    transform: scale(0.88);
+  }
+  .pop-text {
+    position: absolute;
+    top: -10px;
+    font-weight: 800;
+    color: var(--accent);
+    font-size: 1.4rem;
+    pointer-events: none;
+    animation: floatUp 0.6s ease-out forwards;
+  }
+  @keyframes floatUp {
+    0%   { opacity: 1; transform: translate(-50%, 0); }
+    100% { opacity: 0; transform: translate(-50%, -60px); }
+  }
+  #reset {
+    margin-top: 2rem;
+    background: none;
+    border: 1px solid #555;
+    color: #999;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+  #reset:hover { color: white; border-color: #888; }
+</style>
+</head>
+<body>
+
+  <h1>POP THE CAT</h1>
+  <div id="counter">0</div>
+
+  <div id="cat-wrap">
+    <svg id="cat" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- face -->
+      <circle cx="100" cy="100" r="90" fill="#f2c14e"/>
+      <!-- ears -->
+      <polygon points="30,60 55,10 80,55" fill="#f2c14e"/>
+      <polygon points="170,60 145,10 120,55" fill="#f2c14e"/>
+      <polygon points="40,55 58,25 70,52" fill="#e0a63b"/>
+      <polygon points="160,55 142,25 130,52" fill="#e0a63b"/>
+      <!-- eyes -->
+      <circle cx="70" cy="95" r="10" fill="#222"/>
+      <circle cx="130" cy="95" r="10" fill="#222"/>
+      <!-- nose -->
+      <polygon points="100,115 92,127 108,127" fill="#c0392b"/>
+      <!-- mouth: open state (id=mouthOpen) shown/hidden via JS -->
+      <path id="mouthClosed" d="M 80 135 Q 100 140 120 135" stroke="#222" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <ellipse id="mouthOpen" cx="100" cy="140" rx="18" ry="14" fill="#5a1e12" style="display:none"/>
+      <!-- whiskers -->
+      <line x1="15" y1="110" x2="55" y2="105" stroke="#222" stroke-width="2"/>
+      <line x1="15" y1="125" x2="55" y2="122" stroke="#222" stroke-width="2"/>
+      <line x1="185" y1="110" x2="145" y2="105" stroke="#222" stroke-width="2"/>
+      <line x1="185" y1="125" x2="145" y2="122" stroke="#222" stroke-width="2"/>
+    </svg>
+  </div>
+
+  <button id="reset">Reset counter</button>
+
+<script>
+  const catWrap = document.getElementById('cat-wrap');
+  const mouthClosed = document.getElementById('mouthClosed');
+  const mouthOpen = document.getElementById('mouthOpen');
+  const counterEl = document.getElementById('counter');
+  const resetBtn = document.getElementById('reset');
+
+  let count = parseInt(localStorage.getItem('popcatCount') || '0', 10);
+  let isOpen = false;
+  counterEl.textContent = count;
+
+  // Simple pop sound generated on the fly (no external file needed)
+  function playPop() {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(isOpen ? 420 : 220, ctx.currentTime);
+    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.08);
+  }
+
+  function pop(e) {
+    isOpen = !isOpen;
+    mouthOpen.style.display = isOpen ? 'block' : 'none';
+    mouthClosed.style.display = isOpen ? 'none' : 'block';
+
+    count++;
+    counterEl.textContent = count;
+    localStorage.setItem('popcatCount', count);
+
+    playPop();
+
+    catWrap.classList.add('clicked');
+    setTimeout(() => catWrap.classList.remove('clicked'), 80);
+
+    // floating "+1"
+    const rect = catWrap.getBoundingClientRect();
+    const x = e.clientX ? e.clientX - rect.left : rect.width / 2;
+    const floatEl = document.createElement('div');
+    floatEl.className = 'pop-text';
+    floatEl.style.left = x + 'px';
+    floatEl.textContent = '+1';
+    catWrap.appendChild(floatEl);
+    setTimeout(() => floatEl.remove(), 600);
+  }
+
+  catWrap.addEventListener('click', pop);
+
+  resetBtn.addEventListener('click', () => {
+    count = 0;
+    counterEl.textContent = 0;
+    localStorage.setItem('popcatCount', 0);
+  });
+</script>
+
+</body>
+</html>
