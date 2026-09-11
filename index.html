@@ -79,29 +79,17 @@
   <h1>POP THE CAT</h1>
   <div id="counter">0</div>
 
-  <div id="cat-wrap">
-    <svg id="cat" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <!-- face -->
-      <circle cx="100" cy="100" r="90" fill="#f2c14e"/>
-      <!-- ears -->
-      <polygon points="30,60 55,10 80,55" fill="#f2c14e"/>
-      <polygon points="170,60 145,10 120,55" fill="#f2c14e"/>
-      <polygon points="40,55 58,25 70,52" fill="#e0a63b"/>
-      <polygon points="160,55 142,25 130,52" fill="#e0a63b"/>
-      <!-- eyes -->
-      <circle cx="70" cy="95" r="10" fill="#222"/>
-      <circle cx="130" cy="95" r="10" fill="#222"/>
-      <!-- nose -->
-      <polygon points="100,115 92,127 108,127" fill="#c0392b"/>
-      <!-- mouth: open state (id=mouthOpen) shown/hidden via JS -->
-      <path id="mouthClosed" d="M 80 135 Q 100 140 120 135" stroke="#222" stroke-width="4" fill="none" stroke-linecap="round"/>
-      <ellipse id="mouthOpen" cx="100" cy="140" rx="18" ry="14" fill="#5a1e12" style="display:none"/>
-      <!-- whiskers -->
-      <line x1="15" y1="110" x2="55" y2="105" stroke="#222" stroke-width="2"/>
-      <line x1="15" y1="125" x2="55" y2="122" stroke="#222" stroke-width="2"/>
-      <line x1="185" y1="110" x2="145" y2="105" stroke="#222" stroke-width="2"/>
-      <line x1="185" y1="125" x2="145" y2="122" stroke="#222" stroke-width="2"/>
-    </svg>
+ 
+  <div id="click-wrap">
+    <!-- STATE A: default image -->
+    <img id="img-a" src="nok1.png" alt="state A"
+         onerror="this.style.display='none'; document.getElementById('ph-a').style.display='flex';">
+    <div id="ph-a" class="placeholder" style="display:none;">Put image A's<br>URL/path in img-a's src</div>
+ 
+    <!-- STATE B: shown briefly on click -->
+    <img id="img-b" src="nok2.png" alt="state B"
+         onerror="this.style.display='none'; document.getElementById('ph-b').style.display='flex';">
+    <div id="ph-b" class="placeholder" style="display:none;">Put image B's<br>URL/path in img-b's src</div>
   </div>
 
   <button id="reset">Reset counter</button>
