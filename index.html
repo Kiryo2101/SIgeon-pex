@@ -129,12 +129,14 @@
     soundOn: true,                  // toggle click sound
     soundFreqA: 220,                // pitch for state A click (Hz)
     soundFreqB: 420,                // pitch for state B click (Hz)
-    imgSize: "700px"                // image size — e.g. "400px", "50vw", "300px"
+    imgSize: "700px",          // image size — e.g. "400px", "50vw", "300px"
+    imgSizeMobile: "500px"          // image size on phones (screens under 600px wide)
   };
   // ===========================================
-
+ 
   document.getElementById('title').textContent = CONFIG.title;
-  document.documentElement.style.setProperty('--img-size', CONFIG.imgSize);
+  const isMobile = window.matchMedia("(max-width: 600px)").matches;
+  document.documentElement.style.setProperty('--img-size', isMobile ? CONFIG.imgSizeMobile : CONFIG.imgSize);
 
   const clickWrap = document.getElementById('click-wrap');
   const imgA = document.getElementById('img-a');
